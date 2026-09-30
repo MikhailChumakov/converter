@@ -3,5 +3,6 @@
 in/
 out/
 
+.venv/
 __pycache__/
 *.pyc
