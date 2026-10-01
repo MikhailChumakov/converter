@@ -1,6 +1,5 @@
 from pathlib import Path # для работы с структурой папок
 import subprocess # модуль для запуска внешних программ
-from pathlib import Path
 # from watchdog.observers import Observer  # следит за папкой IN
 # from watchdog.events import FileSystemEventHandler  # «создан новый файл»
 
