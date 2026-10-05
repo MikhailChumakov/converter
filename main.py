@@ -67,5 +67,5 @@ else:
         print('Место для IN не выбрано')
 
 if input_dir.exists() and output_dir.exists():
-    process_files(input_dir, output_dir)
-    watch_folder(input_dir)
+    # process_files(input_dir, output_dir)
+    watch_folder(input_dir, output_dir)
