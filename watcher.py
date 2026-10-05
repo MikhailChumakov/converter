@@ -83,11 +83,12 @@ def check_pending_files():
         time.sleep(2)
 
 
-def process_queue():
+def process_queue(output_dir):
     while True:
         priority, file = file_queue.get()  # распаковка кортежа.
 
         print("Взял из очереди: ", file.name)
+        print("OUT:", output_dir)  # Проверка передачи пути - временный - удалитьы
 
         file_queue.task_done()
 
@@ -123,12 +124,16 @@ def add_existing_files(folder: Path):
 
 
 # Observer - класс из watchdog
-def watch_folder(folder):
+def watch_folder(folder, output_dir):
     observer = Observer()  # созданный объект
     handler = NewFileHandler()  # создание объекта класса  
     observer.schedule(handler, str(folder), recursive=False)  # Следит за folder, события передает в handler
     checker = Thread(target=check_pending_files, daemon=True)
-    worker = Thread(target=process_queue, daemon=True)  # запуск функции в новом потоке, а не моментально.
+    worker = Thread(
+        target=process_queue,
+        args=(output_dir,),
+        daemon=True
+    )  # запуск функции в новом потоке, а не моментально.
     # daemon=True - не будет удерживать программу запущенной, когда процесс закончен
     checker.start()
     worker.start()
