@@ -87,11 +87,15 @@ def process_queue(output_dir):
     while True:
         priority, file = file_queue.get()  # распаковка кортежа.
 
-        print("Взял файл из очереди: ", file.name)
-        convert_file(file, output_dir)
-        # print("OUT:", output_dir)  # Проверка передачи пути - временный - удалить
+        try:
+            print("Взял файл из очереди:", file.name)
+            convert_file(file, output_dir)
 
-        file_queue.task_done()
+        except subprocess.CalledProcessError:
+            print("Ошибка конвертации:", file.name)
+
+        finally:
+            file_queue.task_done()
 
 
 class NewFileHandler(FileSystemEventHandler):
