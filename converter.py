@@ -104,6 +104,7 @@ def convert_file(file: Path, output_dir: Path):
             "-i", str(file),
             "-af", "loudnorm=I=-23:TP=-2:LRA=7",
             "-c:a", "pcm_s16le",
+            "-ar", "48000",
             str(output_file),
         ]
 
