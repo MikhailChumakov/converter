@@ -4,7 +4,7 @@ from queue import PriorityQueue
 from threading import Thread
 from watchdog.observers import Observer  # следит за папкой IN
 from watchdog.events import FileSystemEventHandler  # «создан новый файл» - что делать
-from converter import get_priority
+from converter import get_priority, convert_file
 import subprocess  # для запуска внешних программ. В нашем случае - ffprobe
 
 
@@ -87,8 +87,9 @@ def process_queue(output_dir):
     while True:
         priority, file = file_queue.get()  # распаковка кортежа.
 
-        print("Взял из очереди: ", file.name)
-        print("OUT:", output_dir)  # Проверка передачи пути - временный - удалитьы
+        print("Взял файл из очереди: ", file.name)
+        convert_file(file, output_dir)
+        # print("OUT:", output_dir)  # Проверка передачи пути - временный - удалить
 
         file_queue.task_done()
 
@@ -99,6 +100,10 @@ class NewFileHandler(FileSystemEventHandler):
             return
 
         file = Path(event.src_path)  # путь в объект
+
+        # проверка существования до get_priority()
+        if not file.exists():
+            return
 
         if get_priority(file) == 4:
             print("Пропускаю:", file.name)

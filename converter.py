@@ -64,8 +64,8 @@ def process_files(input_dir: Path, output_dir: Path):
             command = [
                 'ffmpeg',
                 '-i', str(file),
-                '-af', 'loudnorm=I=-23:TP=-2:LRA=7', # -23 LUFS
-                '-c:a', 'pcm_s16le', # указываем явно кодек
+                '-af', 'loudnorm=I=-23:TP=-2:LRA=7',  # -23 LUFS
+                '-c:a', 'pcm_s16le',  # указываем явно кодек
                 str(output_file),
             ]
 
@@ -87,3 +87,41 @@ def process_files(input_dir: Path, output_dir: Path):
 
         else:
             print('Пропускаю:', file.name)
+
+
+def convert_file(file: Path, output_dir: Path):
+    extension = file.suffix.lower()
+
+    if extension in AUDIO_EXTENSIONS:
+        output_file = get_unique_name(
+            file.stem,
+            ".wav",
+            output_dir
+        )
+
+        command = [
+            "ffmpeg",
+            "-i", str(file),
+            "-af", "loudnorm=I=-23:TP=-2:LRA=7",
+            "-c:a", "pcm_s16le",
+            str(output_file),
+        ]
+
+        print("Конвертирую аудио:", file.name)
+        execute_conversion(command, file)
+
+    elif extension in VIDEO_EXTENSIONS:
+        output_file = get_unique_name(
+            file.stem,
+            ".mp4",
+            output_dir
+        )
+
+        command = [
+            "ffmpeg",
+            "-i", str(file),
+            str(output_file),
+        ]
+
+        print("Конвертирую видео:", file.name)
+        execute_conversion(command, file)
