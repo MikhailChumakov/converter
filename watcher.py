@@ -85,9 +85,8 @@ def check_pending_files(stop_event):
 
 def process_queue(output_dir, stop_event):
     while not stop_event.is_set():
-        # priority, file = file_queue.get()  # распаковка кортежа.
         try:
-            priority, file = file_queue.get(timeout=1) # жди файл 1 секунду
+            priority, file = file_queue.get(timeout=1)  # жди файл 1 секунду
 
         except Empty:
             continue
@@ -143,17 +142,17 @@ def watch_folder(folder, output_dir, stop_event=None):
         stop_event = Event()
 
     observer = Observer()  # созданный объект
-    handler = NewFileHandler()  # создание объекта класса  
+    handler = NewFileHandler()  # создание объекта класса
     observer.schedule(handler, str(folder), recursive=False)  # Следит за folder, события передает в handler
     checker = Thread(
         target=check_pending_files,
-        args= (stop_event, ),
+        args=(stop_event,),
         daemon=True,
     )
 
     worker = Thread(
         target=process_queue,
-        args=(output_dir,stop_event),
+        args=(output_dir, stop_event),
         daemon=True
     )  # запуск функции в новом потоке, а не моментально.
     # daemon=True - не будет удерживать программу запущенной, когда процесс закончен
@@ -174,11 +173,3 @@ def watch_folder(folder, output_dir, stop_event=None):
         stop_event.set()
         observer.stop()
         observer.join()
-    # try:
-    #     while True:
-    #         time.sleep(1)
-
-    # except KeyboardInterrupt:
-    #     observer.stop()  # Если Ctrl+C - остановить Observer
-
-    #observer.join()
