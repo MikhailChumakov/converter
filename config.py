@@ -1,5 +1,4 @@
 from pathlib import Path # для работы с структурой папок
-import subprocess # модуль для запуска внешних программ
 import json
 import platform
 from tkinter import filedialog

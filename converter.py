@@ -1,7 +1,5 @@
 from pathlib import Path # для работы с структурой папок
 import subprocess # модуль для запуска внешних программ
-# from watchdog.observers import Observer  # следит за папкой IN
-# from watchdog.events import FileSystemEventHandler  # «создан новый файл»
 
 
 VIDEO_EXTENSIONS = {'.mp4', '.mov', '.mkv', '.avi', '.mxf'}
@@ -26,8 +24,14 @@ def get_priority(file: Path) -> int:
     return 4
 
 
-def execute_conversion (command: list[str], file: Path):
-    subprocess.run(command, check=True)
+def execute_conversion(command: list[str], file: Path, output_file: Path):
+    try:
+        subprocess.run(command, check=True)
+    except subprocess.CalledProcessError:
+        if output_file.exists():
+            output_file.unlink()
+
+        raise
 
     file.unlink()
 
@@ -52,41 +56,41 @@ def get_unique_name(source_name: str, output_format: str, output_dir: Path) -> P
         counter += 1
 
 
-def process_files(input_dir: Path, output_dir: Path):
-    files = sorted(input_dir.iterdir(), key=get_priority)
+# def process_files(input_dir: Path, output_dir: Path):
+#     files = sorted(input_dir.iterdir(), key=get_priority)
 
-    for file in files:
-        extension = file.suffix.lower()
+#     for file in files:
+#         extension = file.suffix.lower()
 
-        if extension in AUDIO_EXTENSIONS:
-            output_file = get_unique_name(file.stem, '.wav', output_dir) # путь и имя сконвертируемого файла
+#         if extension in AUDIO_EXTENSIONS:
+#             output_file = get_unique_name(file.stem, '.wav', output_dir) # путь и имя сконвертируемого файла
 
-            command = [
-                'ffmpeg',
-                '-i', str(file),
-                '-af', 'loudnorm=I=-23:TP=-2:LRA=7',  # -23 LUFS
-                '-c:a', 'pcm_s16le',  # указываем явно кодек
-                str(output_file),
-            ]
+#             command = [
+#                 'ffmpeg',
+#                 '-i', str(file),
+#                 '-af', 'loudnorm=I=-23:TP=-2:LRA=7',  # -23 LUFS
+#                 '-c:a', 'pcm_s16le',  # указываем явно кодек
+#                 str(output_file),
+#             ]
 
-            print('Конвертирую аудио:', file.name)
-            execute_conversion(command, file)
+#             print('Конвертирую аудио:', file.name)
+#             execute_conversion(command, file)
 
-        elif extension in VIDEO_EXTENSIONS:
-            output_file = get_unique_name(file.stem, '.mp4', output_dir)
+#         elif extension in VIDEO_EXTENSIONS:
+#             output_file = get_unique_name(file.stem, '.mp4', output_dir)
 
-            command = [
-                'ffmpeg',
-                '-i', str(file),
-                str(output_file)
-            ]
+#             command = [
+#                 'ffmpeg',
+#                 '-i', str(file),
+#                 str(output_file)
+#             ]
 
-            print('Конвертирую видео:', file.name)
+#             print('Конвертирую видео:', file.name)
 
-            execute_conversion(command, file)
+#             execute_conversion(command, file)
 
-        else:
-            print('Пропускаю:', file.name)
+#         else:
+#             print('Пропускаю:', file.name)
 
 
 def convert_file(file: Path, output_dir: Path):
@@ -109,7 +113,7 @@ def convert_file(file: Path, output_dir: Path):
         ]
 
         print("Конвертирую аудио:", file.name)
-        execute_conversion(command, file)
+        execute_conversion(command, file, output_file)
 
     elif extension in VIDEO_EXTENSIONS:
         output_file = get_unique_name(
@@ -125,4 +129,4 @@ def convert_file(file: Path, output_dir: Path):
         ]
 
         print("Конвертирую видео:", file.name)
-        execute_conversion(command, file)
+        execute_conversion(command, file, output_file)

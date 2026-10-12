@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from threading import Thread
+from threading import Thread, Event
 from config import load_config, save_config, select_folder
 from watcher import watch_folder
 
@@ -9,7 +9,7 @@ def run_gui():
 
     window = ctk.CTk()
     window.title("Converter")
-    window.geometry("650x300")
+    window.geometry("650x350")
 
     title = ctk.CTkLabel(
         window,
@@ -20,11 +20,13 @@ def run_gui():
 
     config = load_config()
 
+    stop_event = Event()
+
     if config is not None:
         input_dir, output_dir = config  # распаковка кортежа с путями in и outs
     else:
-        input_dir = "Not selected"
-        output_dir = "Not selected"
+        input_dir = None
+        output_dir = None
 
     def change_input():
         nonlocal input_dir
@@ -37,7 +39,8 @@ def run_gui():
         input_dir = base_dir / "in"
         input_dir.mkdir(parents=True, exist_ok=True)
 
-        save_config(input_dir, output_dir)
+        if input_dir is not None:
+            save_config(input_dir, output_dir)
 
         input_label.configure(text=f"IN: {input_dir}")
 
@@ -53,15 +56,18 @@ def run_gui():
         output_dir = base_dir / "out"
         output_dir.mkdir(parents=True, exist_ok=True)
 
-        save_config(input_dir, output_dir)
+        if output_dir is not None:
+            save_config(input_dir, output_dir)
 
         output_label.configure(text=f"OUT: {output_dir}")
 
 
     def start_watcher():
+        stop_event.clear()
+
         watcher_thread = Thread(
             target=watch_folder,
-            args=(input_dir, output_dir),
+            args=(input_dir, output_dir, stop_event),
             daemon=True
         )
 
@@ -69,6 +75,21 @@ def run_gui():
 
         status.configure(text="Status: Watching")
         start_button.configure(state="disabled")
+        stop_button.configure(state="normal")
+
+        input_button.configure(state="disabled")
+        output_button.configure(state="disabled")
+
+
+    def stop_watcher():
+        stop_event.set()
+
+        status.configure(text="Status: Ready")
+        start_button.configure(state="normal")
+        stop_button.configure(state="disabled")
+
+        input_button.configure(state="normal")
+        output_button.configure(state="normal")
 
 
     # IN
@@ -119,6 +140,14 @@ def run_gui():
         command=start_watcher
     )
     start_button.pack(pady=10)
+
+    stop_button = ctk.CTkButton(
+        window,
+        text="Stop",
+        command=stop_watcher,
+        state="disabled"
+    )
+    stop_button.pack(pady=5)
 
     window.mainloop()
 

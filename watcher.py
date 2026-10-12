@@ -1,7 +1,7 @@
 import time
 from pathlib import Path
-from queue import PriorityQueue
-from threading import Thread
+from queue import PriorityQueue, Empty
+from threading import Thread, Event
 from watchdog.observers import Observer  # следит за папкой IN
 from watchdog.events import FileSystemEventHandler  # «создан новый файл» - что делать
 from converter import get_priority, convert_file
@@ -67,8 +67,8 @@ def is_file_ready(file: Path) -> bool:
     return result.returncode == 0
 
 
-def check_pending_files():
-    while True:
+def check_pending_files(stop_event):
+    while not stop_event.is_set():
         for file in list(pending_files):
             if is_file_ready(file):
                 priority = get_priority(file)
@@ -80,12 +80,17 @@ def check_pending_files():
 
                 print("Файл готов и добавлен в очередь:", file.name)
 
-        time.sleep(2)
+        stop_event.wait(2)
 
 
-def process_queue(output_dir):
-    while True:
-        priority, file = file_queue.get()  # распаковка кортежа.
+def process_queue(output_dir, stop_event):
+    while not stop_event.is_set():
+        # priority, file = file_queue.get()  # распаковка кортежа.
+        try:
+            priority, file = file_queue.get(timeout=1) # жди файл 1 секунду
+
+        except Empty:
+            continue
 
         try:
             print("Взял файл из очереди:", file.name)
@@ -133,28 +138,47 @@ def add_existing_files(folder: Path):
 
 
 # Observer - класс из watchdog
-def watch_folder(folder, output_dir):
+def watch_folder(folder, output_dir, stop_event=None):
+    if stop_event is None:
+        stop_event = Event()
+
     observer = Observer()  # созданный объект
     handler = NewFileHandler()  # создание объекта класса  
     observer.schedule(handler, str(folder), recursive=False)  # Следит за folder, события передает в handler
-    checker = Thread(target=check_pending_files, daemon=True)
+    checker = Thread(
+        target=check_pending_files,
+        args= (stop_event, ),
+        daemon=True,
+    )
+
     worker = Thread(
         target=process_queue,
-        args=(output_dir,),
+        args=(output_dir,stop_event),
         daemon=True
     )  # запуск функции в новом потоке, а не моментально.
     # daemon=True - не будет удерживать программу запущенной, когда процесс закончен
+
     checker.start()
     worker.start()
     observer.start()
 
     add_existing_files(folder)
-
     try:
-        while True:
+        while not stop_event.is_set():
             time.sleep(1)
 
     except KeyboardInterrupt:
-        observer.stop()  # Если Ctrl+C - остановить Observer
+        stop_event.set()
 
-    observer.join()
+    finally:
+        stop_event.set()
+        observer.stop()
+        observer.join()
+    # try:
+    #     while True:
+    #         time.sleep(1)
+
+    # except KeyboardInterrupt:
+    #     observer.stop()  # Если Ctrl+C - остановить Observer
+
+    #observer.join()
