@@ -26,7 +26,13 @@ def get_priority(file: Path) -> int:
 
 def execute_conversion(command: list[str], file: Path, output_file: Path):
     try:
-        subprocess.run(command, check=True)
+        subprocess.run(
+            command,
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )  # убираю вывод технических строк от ffmpeg.
+
     except subprocess.CalledProcessError:
         if output_file.exists():
             output_file.unlink()
