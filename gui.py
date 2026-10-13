@@ -100,7 +100,6 @@ def run_gui():
         input_button.configure(state="normal")
         output_button.configure(state="normal")
 
-
     # IN
     input_frame = ctk.CTkFrame(window)
     input_frame.pack(fill="x", padx=30, pady=5)
