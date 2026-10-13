@@ -69,7 +69,6 @@ def run_gui():
         output_label.configure(text=f"OUT: {output_dir}")
         update_start_button()
 
-
     def start_watcher():
         stop_event.clear()
 
@@ -87,7 +86,6 @@ def run_gui():
 
         input_button.configure(state="disabled")
         output_button.configure(state="disabled")
-
 
     def stop_watcher():
         stop_event.set()
