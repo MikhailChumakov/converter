@@ -6,6 +6,7 @@ from watchdog.observers import Observer  # следит за папкой IN
 from watchdog.events import FileSystemEventHandler  # «создан новый файл» - что делать
 from converter import get_priority, convert_file
 import subprocess  # для запуска внешних программ. В нашем случае - ffprobe
+from binaries import FFPROBE
 
 
 file_queue = PriorityQueue()  # объект очереди
@@ -55,7 +56,7 @@ def is_file_ready(file: Path) -> bool:
 
     result = subprocess.run(
         [
-            "ffprobe",
+            str(FFPROBE),
             "-v", "error",
             "-show_format",
             str(file),

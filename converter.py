@@ -1,6 +1,6 @@
 from pathlib import Path # для работы с структурой папок
 import subprocess # модуль для запуска внешних программ
-
+from binaries import FFMPEG
 
 VIDEO_EXTENSIONS = {'.mp4', '.mov', '.mkv', '.avi', '.mxf'}
 AUDIO_EXTENSIONS = {'.mp3', '.wav', '.ogg', '.flac', '.m4a', '.aac'}
@@ -110,7 +110,7 @@ def convert_file(file: Path, output_dir: Path):
         )
 
         command = [
-            "ffmpeg",
+            str(FFMPEG),
             "-i", str(file),
             "-af", "loudnorm=I=-23:TP=-2:LRA=7",
             "-c:a", "pcm_s16le",
@@ -129,7 +129,7 @@ def convert_file(file: Path, output_dir: Path):
         )
 
         command = [
-            "ffmpeg",
+            str(FFMPEG),
             "-i", str(file),
             str(output_file),
         ]

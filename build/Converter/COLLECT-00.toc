@@ -989,6 +989,8 @@
   ('base_library.zip',
    '/Users/mc/Documents/prj/converter/build/Converter/base_library.zip',
    'DATA'),
+  ('bin/ffmpeg', '/Users/mc/Documents/prj/converter/bin/ffmpeg', 'BINARY'),
+  ('bin/ffprobe', '/Users/mc/Documents/prj/converter/bin/ffprobe', 'BINARY'),
   ('customtkinter-6.0.0.dist-info/INSTALLER',
    '/Users/mc/Documents/prj/converter/.venv/lib/python3.13/site-packages/customtkinter-6.0.0.dist-info/INSTALLER',
    'DATA'),

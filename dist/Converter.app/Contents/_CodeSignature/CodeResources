@@ -1298,7 +1298,7 @@
 		</data>
 		<key>Resources/base_library.zip</key>
 		<data>
-		dbE2CEdQpZT6JT9DZajqGRZVtZ8=
+		JbnZleD1SbIofE43qFdnSxwjNsM=
 		</data>
 		<key>Resources/customtkinter-6.0.0.dist-info/INSTALLER</key>
 		<data>
@@ -1613,6 +1613,24 @@
 		<dict>
 			<key>symlink</key>
 			<string>../Resources/base_library.zip</string>
+		</dict>
+		<key>Frameworks/bin/ffmpeg</key>
+		<dict>
+			<key>cdhash</key>
+			<data>
+			PJRc6No+Vok1cw1f5cTLthgxZ0g=
+			</data>
+			<key>requirement</key>
+			<string>cdhash H"3c945ce8da3e568935730d5fe5c4cbb618316748"</string>
+		</dict>
+		<key>Frameworks/bin/ffprobe</key>
+		<dict>
+			<key>cdhash</key>
+			<data>
+			QvmhKjjvYe+lzfDRVVN2E9o9SGg=
+			</data>
+			<key>requirement</key>
+			<string>cdhash H"42f9a12a38ef61efa5cdf0d155537613da3d4868"</string>
 		</dict>
 		<key>Frameworks/customtkinter</key>
 		<dict>
@@ -4378,8 +4396,13 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			53F6EWSRVvTeTZZWxORQC7uqdfde044useuL2BlNfj0=
+			uu0hgzjOTDSOjwcGWOnVAScpxEpFYP6dMDRTQiLkFEI=
 			</data>
+		</dict>
+		<key>Resources/bin</key>
+		<dict>
+			<key>symlink</key>
+			<string>../Frameworks/bin</string>
 		</dict>
 		<key>Resources/customtkinter-6.0.0.dist-info/INSTALLER</key>
 		<dict>

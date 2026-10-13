@@ -47,6 +47,7 @@
   ('base64',
    '/opt/homebrew/Cellar/python@3.13/3.13.15/Frameworks/Python.framework/Versions/3.13/lib/python3.13/base64.py',
    'PYMODULE'),
+  ('binaries', '/Users/mc/Documents/prj/converter/binaries.py', 'PYMODULE'),
   ('bisect',
    '/opt/homebrew/Cellar/python@3.13/3.13.15/Frameworks/Python.framework/Versions/3.13/lib/python3.13/bisect.py',
    'PYMODULE'),
