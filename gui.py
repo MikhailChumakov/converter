@@ -28,6 +28,12 @@ def run_gui():
         input_dir = None
         output_dir = None
 
+    def update_start_button():
+        if input_dir is not None and output_dir is not None:
+            start_button.configure(state="normal")
+        else:
+            start_button.configure(state="disabled")
+
     def change_input():
         nonlocal input_dir
 
@@ -39,10 +45,11 @@ def run_gui():
         input_dir = base_dir / "in"
         input_dir.mkdir(parents=True, exist_ok=True)
 
-        if input_dir is not None:
+        if output_dir is not None:
             save_config(input_dir, output_dir)
 
         input_label.configure(text=f"IN: {input_dir}")
+        update_start_button()
 
 
     def change_output():
@@ -56,10 +63,11 @@ def run_gui():
         output_dir = base_dir / "out"
         output_dir.mkdir(parents=True, exist_ok=True)
 
-        if output_dir is not None:
+        if input_dir is not None:
             save_config(input_dir, output_dir)
 
         output_label.configure(text=f"OUT: {output_dir}")
+        update_start_button()
 
 
     def start_watcher():
@@ -85,7 +93,8 @@ def run_gui():
         stop_event.set()
 
         status.configure(text="Status: Ready")
-        start_button.configure(state="normal")
+        update_start_button()
+        # start_button.configure(state="normal")
         stop_button.configure(state="disabled")
 
         input_button.configure(state="normal")
@@ -137,7 +146,8 @@ def run_gui():
     start_button = ctk.CTkButton(
         window,
         text="Start",
-        command=start_watcher
+        command=start_watcher,
+        state="disabled"
     )
     start_button.pack(pady=10)
 
@@ -148,6 +158,8 @@ def run_gui():
         state="disabled"
     )
     stop_button.pack(pady=5)
+
+    update_start_button()
 
     window.mainloop()
 

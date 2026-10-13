@@ -6,3 +6,12 @@ out/
 .venv/
 __pycache__/
 *.pyc
+.mypy_cache/
+
+# PyInstaller
+build/
+dist/
+*.spec
+
+# FFmpeg archives
+bin/*.zip
